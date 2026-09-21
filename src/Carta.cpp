@@ -9,17 +9,10 @@ private:
     int _valor;
 
 public:
-    // Constructor: Asigna color y valor numérico al crear la carta
-    Carta(std::string color, int valor) : _color(color), _valor(valor) {}
+    Carta(std::string color = "", int valor = 0) : _color(color), _valor(valor) {}
 
-    // Métodos para consultar los datos de la carta
-    std::string color() const { 
-        return _color; 
-    }
-
-    int valor() const { 
-        return _valor; 
-    }
+    std::string getColor() const { return _color; }
+    int getValor() const { return _valor; }
 };
 
 #endif

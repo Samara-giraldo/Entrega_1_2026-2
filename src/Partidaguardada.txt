@@ -1,0 +1,12 @@
+void guardarProgresoEnDisco(const std::string& jugador, int puntos, int ronda) {
+    // std::ios::app hace que se agreguen las líneas al final sin borrar lo anterior
+    std::ofstream archivo("partida_guardada.txt", std::ios::app);
+    
+    if (archivo.is_open()) {
+        archivo << "Ronda " << ronda << " | Ganador: " << jugador << " | Puntos guardados: " << puntos << "\n";
+        archivo.close(); // Se cierra para asegurar que se guarde en la memoria del disco
+        std::cout << ">> [DISCO] Progreso guardado correctamente en 'partida_guardada.txt'\n";
+    } else {
+        std::cout << ">> [ERROR] No se pudo escribir en el disco duro.\n";
+    }
+}

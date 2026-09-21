@@ -3,42 +3,32 @@
 
 #include <string>
 #include <vector>
-#include "Carta.cpp"
 
 class Jugador {
 private:
     std::string _nombre;
     int _puntos;
-    std::vector<Carta> _mano; 
+    std::vector<Carta> _mano;
+
 public:
-   
-    Jugador(std::string nombre) : _nombre(nombre), _puntos(0) {}
+    Jugador(std::string nombre = "") : _nombre(nombre), _puntos(0) {}
 
-  
-    void recibirCarta(const Carta& c) { 
-        _mano.push_back(c); 
-    }
-    
-    
-    Carta lanzarCarta() {
-        Carta c = _mano.back();
-        _mano.pop_back();
-        return c;
-    }
+    std::string getNombre() const { return _nombre; }
+    int getPuntos() const { return _puntos; }
 
-   
-    void agregarPuntos(int pts) { 
-        _puntos += pts; 
+    void sumarPunto() { _puntos++; }
+    void recibirCarta(const Carta& c) { _mano.push_back(c); }
+
+    Carta jugarCarta() {
+        if (!_mano.empty()) {
+            Carta c = _mano.back();
+            _mano.pop_back();
+            return c;
+        }
+        return Carta("Vacia", 0);
     }
 
-    
-    int puntos() const { 
-        return _puntos; 
-    }
-
-    std::string nombre() const { 
-        return _nombre; 
-    }
+    int cantidadCartas() const { return _mano.size(); }
 };
 
 #endif
