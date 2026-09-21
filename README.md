@@ -1,9 +1,9 @@
 # Juego de Cartas en C++
 
-Desarrollamos un juego de cartas interactivo para 4 jugadores en C++, aplicando programación orientada a objetos para que el código sea ordenado y fácil de entender.
+Desarrollamos un juego de cartas para 4 jugadores en C++, aplicando programación orientada a objetos para que el código sea ordenado y fácil de entender.
 
 ## Descripción del Proyecto
-El objetivo de este proyecto es simular una partida de cartas donde 4 jugadores (Samara, María, Esteban y Felipe) compiten a lo largo de varias rondas.
+El objetivo de este proyecto es simular una partida de cartas donde 4 jugadores (Samara, Maria, Esteban y Felipe) compiten a lo largo de varias rondas.
 
 A diferencia de los juegos tradicionales donde las reglas son siempre fijas, aquí la regla para ganar cambia en cada ronda según la condición que imponga el jugador activo. Esto hace que cada partida sea dinámica y estratégica.
 
@@ -19,7 +19,7 @@ Cómo se Gana una Ronda: Quien lanza la carta que cumple con la regla de esa ron
 El Ganador Final: Al quedarse sin cartas, se cuentan los puntos acumulados por cada jugador y quien tenga más puntos gana la partida.
 
 ## Manual del Juego
-El juego funciona de forma automática siguiendo este flujo:
+El juego funciona de forma automática siguiedno estos pasos:
 
 Inicio: El programa crea a los 4 jugadores y baraja el mazo completo.
 
@@ -33,10 +33,10 @@ Cada jugador selecciona y lanza una carta de su mano.
 
 El programa evalúa todas las cartas sobre la mesa, aplica la regla vigente y anuncia al ganador de la ronda.
 
-Final del Juego: El sistema muestra una tabla de puntuación final con los puntos de cada uno y proclama al ganador definitivo.
+Final del Juego: El sistema muestra una tabla de puntuación final con los puntos de cada uno y anuncia al ganador definitivo.
 
 ## Cómo ponerlo a funcionar
-Para probar el juego desde la terminal (en tu computadora o en GitHub Codespaces), solo debes ejecutar estos dos comandos:
+Para probar el juego desde la terminal (en tu computador o en GitHub Codespaces), solo debes ejecutar estos dos comandos:
 
 Para compilar y ejecutar el proyecto desde la terminal:
 
