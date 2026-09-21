@@ -1,4 +1,4 @@
-###Juego de Cartas en C++
+# Juego de Cartas en C++
 
 Desarrollamos un juego de cartas interactivo para 4 jugadores en C++, aplicando programación orientada a objetos para que el código sea ordenado y fácil de entender.
 
