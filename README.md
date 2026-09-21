@@ -2,7 +2,7 @@
 
 Desarrollamos un juego de cartas interactivo para 4 jugadores en C++, aplicando programación orientada a objetos para que el código sea ordenado y fácil de entender.
 
-Descripción del Proyecto
+## Descripción del Proyecto
 El objetivo de este proyecto es simular una partida de cartas donde 4 jugadores (Samara, María, Esteban y Felipe) compiten a lo largo de varias rondas.
 
 A diferencia de los juegos tradicionales donde las reglas son siempre fijas, aquí la regla para ganar cambia en cada ronda según la condición que imponga el jugador activo. Esto hace que cada partida sea dinámica y estratégica.
