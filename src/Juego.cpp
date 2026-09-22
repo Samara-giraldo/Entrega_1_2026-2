@@ -6,26 +6,25 @@
 #include <string>
 #include <fstream>
 #include <limits>
+#include "Regla.cpp"
 
 class Juego {
 private:
     Mazo _mazo;
     std::vector<Jugador> _jugadores;
+    Regla _reglaActual;
 
-    // Guarda los eventos de la partida en el disco duro
     void guardarProgresoEnDisco(const std::string& texto) {
         std::ofstream archivo("partida_guardada.txt", std::ios::app);
         if (archivo.is_open()) {
             archivo << texto << "\n";
             archivo.close();
             std::cout << ">> [DISCO OK] Registro guardado en 'partida_guardada.txt'\n";
-        } else {
-            std::cout << ">> [ERROR] No se pudo escribir en el disco.\n";
         }
     }
 
 public:
-    Juego(std::string nombreHumano) {
+    Juego(std::string nombreHumano, const Regla& regla) : _reglaActual(regla) {
         _jugadores.push_back(Jugador(nombreHumano));
         _jugadores.push_back(Jugador("Maria"));
         _jugadores.push_back(Jugador("Esteban"));
@@ -35,16 +34,15 @@ public:
     void iniciarPartida() {
         _mazo.mezclar();
 
-        // REPARTO INICIAL: Exactamente 4 cartas a cada uno de los 4 jugadores
+        // Reparto inicial de 4 cartas por jugador
         for (int i = 0; i < 4; ++i) {
             for (auto& jug : _jugadores) {
                 jug.recibirCarta(_mazo.repartir());
             }
         }
 
-        guardarProgresoEnDisco("=== NUEVA PARTIDA INTERACTIVA (4 CARTAS) ===");
+        guardarProgresoEnDisco("=== NUEVA PARTIDA CON REGLA SELECCIONADA ===");
 
-        // Bucle de las 4 rondas (1 carta jugada por ronda)
         for (int ronda = 1; ronda <= 4; ++ronda) {
             std::cout << "\n========================================\n";
             std::cout << "               RONDA " << ronda << "\n";
@@ -52,7 +50,7 @@ public:
 
             std::vector<Carta> mesa;
 
-            // --- TURNO DEL JUGADOR HUMANO (SELECCIÓN REAL) ---
+            // Turno del Jugador Humano
             std::cout << "\nTus cartas disponibles:\n";
             _jugadores[0].mostrarMano();
 
@@ -70,25 +68,23 @@ public:
                 }
             }
 
-            // Lanzar la carta elegida por el jugador
             Carta cartaHumano = _jugadores[0].jugarCartaPorIndice(seleccion - 1);
             mesa.push_back(cartaHumano);
             std::cout << "\nLanzaste a la mesa: " << cartaHumano.getColor() << " " << cartaHumano.getValor() << "\n";
 
-            // --- TURNO DE LOS OTROS JUGADORES (BOTS) ---
+            // Turno de los Bots
             for (size_t i = 1; i < _jugadores.size(); ++i) {
                 Carta c = _jugadores[i].jugarCartaAuto();
                 mesa.push_back(c);
                 std::cout << _jugadores[i].getNombre() << " jugo: " << c.getColor() << " " << c.getValor() << "\n";
             }
 
-            // Evaluar el ganador según la regla
-            int idxGanador = Regla::evaluarGanadorRonda(mesa);
+            // Evaluar el ganador según la Regla activa
+            int idxGanador = _reglaActual.evaluarGanadorRonda(mesa);
             _jugadores[idxGanador].sumarPunto();
 
             std::cout << "\n>> ¡Gana la ronda " << ronda << ": " << _jugadores[idxGanador].getNombre() << "!\n";
 
-            // Guardado en el disco duro
             std::string datosRonda = "Ronda " + std::to_string(ronda) + " | Ganador: " + 
                                      _jugadores[idxGanador].getNombre() + 
                                      " | Carta: " + mesa[idxGanador].getColor() + " " + std::to_string(mesa[idxGanador].getValor());
@@ -96,7 +92,7 @@ public:
             guardarProgresoEnDisco(datosRonda);
         }
 
-        // --- RESULTADOS FINALES ---
+        // Resultados Finales
         std::cout << "\n========================================\n";
         std::cout << "           PUNTUACION FINAL             \n";
         std::cout << "========================================\n";
