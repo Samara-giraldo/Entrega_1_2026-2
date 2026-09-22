@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <limits>
 
 class Juego {
 private:
@@ -34,33 +35,49 @@ public:
     void iniciarPartida() {
         _mazo.mezclar();
 
-        // Repartir 8 cartas a cada jugador (BUCLE CORREGIDO)
-        for (int i = 0; i < 8; ++i) {
+        // REPARTO INICIAL: Exactamente 4 cartas a cada uno de los 4 jugadores
+        for (int i = 0; i < 4; ++i) {
             for (auto& jug : _jugadores) {
                 jug.recibirCarta(_mazo.repartir());
             }
         }
 
-        guardarProgresoEnDisco("=== NUEVA PARTIDA INTERACTIVA ===");
+        guardarProgresoEnDisco("=== NUEVA PARTIDA INTERACTIVA (4 CARTAS) ===");
 
-        // Bucle principal de las 8 rondas
-        for (int ronda = 1; ronda <= 8; ++ronda) {
+        // Bucle de las 4 rondas (1 carta jugada por ronda)
+        for (int ronda = 1; ronda <= 4; ++ronda) {
             std::cout << "\n========================================\n";
             std::cout << "               RONDA " << ronda << "\n";
             std::cout << "========================================\n";
 
             std::vector<Carta> mesa;
 
-            // --- TURNO DEL JUGADOR HUMANO (TÚ) ---
-            std::cout << "\nTu turno, " << _jugadores[0].getNombre() << "!\n";
-            
-            Carta cartaHumano = _jugadores[0].jugarCarta();
+            // --- TURNO DEL JUGADOR HUMANO (SELECCIÓN REAL) ---
+            std::cout << "\nTus cartas disponibles:\n";
+            _jugadores[0].mostrarMano();
+
+            int seleccion = 0;
+            while (true) {
+                std::cout << "\nElige el numero de la carta que quieres lanzar (1 a " 
+                          << _jugadores[0].getCantidadCartas() << "): ";
+                
+                if (std::cin >> seleccion && seleccion >= 1 && seleccion <= _jugadores[0].getCantidadCartas()) {
+                    break;
+                } else {
+                    std::cout << "Opcion invalida. Intenta nuevamente.\n";
+                    std::cin.clear();
+                    std::cin.ignore(10000, '\n');
+                }
+            }
+
+            // Lanzar la carta elegida por el jugador
+            Carta cartaHumano = _jugadores[0].jugarCartaPorIndice(seleccion - 1);
             mesa.push_back(cartaHumano);
-            std::cout << "Lanzaste a la mesa: " << cartaHumano.getColor() << " " << cartaHumano.getValor() << "\n";
+            std::cout << "\nLanzaste a la mesa: " << cartaHumano.getColor() << " " << cartaHumano.getValor() << "\n";
 
             // --- TURNO DE LOS OTROS JUGADORES (BOTS) ---
             for (size_t i = 1; i < _jugadores.size(); ++i) {
-                Carta c = _jugadores[i].jugarCarta();
+                Carta c = _jugadores[i].jugarCartaAuto();
                 mesa.push_back(c);
                 std::cout << _jugadores[i].getNombre() << " jugo: " << c.getColor() << " " << c.getValor() << "\n";
             }
@@ -71,16 +88,12 @@ public:
 
             std::cout << "\n>> ¡Gana la ronda " << ronda << ": " << _jugadores[idxGanador].getNombre() << "!\n";
 
-            // Guardar el avance de la ronda en el disco
+            // Guardado en el disco duro
             std::string datosRonda = "Ronda " + std::to_string(ronda) + " | Ganador: " + 
                                      _jugadores[idxGanador].getNombre() + 
                                      " | Carta: " + mesa[idxGanador].getColor() + " " + std::to_string(mesa[idxGanador].getValor());
             
             guardarProgresoEnDisco(datosRonda);
-
-            std::cout << "Presiona Enter para avanzar a la siguiente ronda...";
-            std::cin.ignore();
-            std::cin.get();
         }
 
         // --- RESULTADOS FINALES ---
