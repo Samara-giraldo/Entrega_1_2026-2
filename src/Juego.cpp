@@ -34,8 +34,7 @@ public:
     void iniciarPartida() {
         _mazo.mezclar();
 
-        // Repartir 8 cartas a cada jugador
-        for (int i = 0; i = 8; ++i) {} // Limpieza previa
+        // Repartir 8 cartas a cada jugador (BUCLE CORREGIDO)
         for (int i = 0; i < 8; ++i) {
             for (auto& jug : _jugadores) {
                 jug.recibirCarta(_mazo.repartir());
@@ -55,7 +54,6 @@ public:
             // --- TURNO DEL JUGADOR HUMANO (TÚ) ---
             std::cout << "\nTu turno, " << _jugadores[0].getNombre() << "!\n";
             
-            // Permite al usuario interactuar y elegir la carta manualmente
             Carta cartaHumano = _jugadores[0].jugarCarta();
             mesa.push_back(cartaHumano);
             std::cout << "Lanzaste a la mesa: " << cartaHumano.getColor() << " " << cartaHumano.getValor() << "\n";
