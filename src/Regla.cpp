@@ -1,99 +1,71 @@
 #ifndef REGLA_CPP
 #define REGLA_CPP
 
-#include <iostream>
-#include <vector>
 #include <string>
+#include <vector>
 #include "Carta.cpp"
 
 class Regla {
 private:
-    int _opcionSeleccionada;
-    std::string _descripcion;
+    int _opcion;
 
 public:
-    Regla(int opcion = 1) : _opcionSeleccionada(opcion) {
-        setOpcion(opcion);
-    }
+    Regla(int opcion) : _opcion(opcion) {}
 
-    void setOpcion(int opcion) {
-        _opcionSeleccionada = opcion;
-        switch (_opcionSeleccionada) {
-            case 1: _descripcion = "El Rojo mas alto gana"; break;
-            case 2: _descripcion = "El Rojo mas bajo gana"; break;
-            case 3: _descripcion = "El Azul mas alto gana"; break;
-            case 4: _descripcion = "El Azul mas bajo gana"; break;
-            case 5: _descripcion = "El Verde mas alto gana"; break;
-            case 6: _descripcion = "El Verde mas bajo gana"; break;
-            case 7: _descripcion = "El Amarillo mas alto gana"; break;
-            case 8: _descripcion = "El Amarillo mas bajo gana"; break;
-            default: _descripcion = "El Rojo mas alto gana"; break;
+    std::string getDescripcion() const {
+        switch (_opcion) {
+            case 1: return "El Rojo mas alto gana";
+            case 2: return "El Rojo mas bajo gana";
+            case 3: return "El Azul mas alto gana";
+            case 4: return "El Azul mas bajo gana";
+            case 5: return "El Verde mas alto gana";
+            case 6: return "El Verde mas bajo gana";
+            case 7: return "El Amarillo mas alto gana";
+            case 8: return "El Amarillo mas bajo gana";
+            default: return "Regla invalida";
         }
     }
-
-    std::string getDescripcion() const { return _descripcion; }
 
     int evaluarGanadorRonda(const std::vector<Carta>& mesa) const {
-        if (mesa.empty()) return 0;
+        std::string colorBuscado;
+        bool buscaMayor = true;
 
-        std::string colorBuscado = "";
-        bool buscarMasAlto = true;
-
-        switch (_opcionSeleccionada) {
-            case 1: colorBuscado = "Rojo"; buscarMasAlto = true; break;
-            case 2: colorBuscado = "Rojo"; buscarMasAlto = false; break;
-            case 3: colorBuscado = "Azul"; buscarMasAlto = true; break;
-            case 4: colorBuscado = "Azul"; buscarMasAlto = false; break;
-            case 5: colorBuscado = "Verde"; buscarMasAlto = true; break;
-            case 6: colorBuscado = "Verde"; buscarMasAlto = false; break;
-            case 7: colorBuscado = "Amarillo"; buscarMasAlto = true; break;
-            case 8: colorBuscado = "Amarillo"; buscarMasAlto = false; break;
-            default: colorBuscado = "Rojo"; buscarMasAlto = true; break;
+        switch (_opcion) {
+            case 1: colorBuscado = "Rojo"; buscaMayor = true; break;
+            case 2: colorBuscado = "Rojo"; buscaMayor = false; break;
+            case 3: colorBuscado = "Azul"; buscaMayor = true; break;
+            case 4: colorBuscado = "Azul"; buscaMayor = false; break;
+            case 5: colorBuscado = "Verde"; buscaMayor = true; break;
+            case 6: colorBuscado = "Verde"; buscaMayor = false; break;
+            case 7: colorBuscado = "Amarillo"; buscaMayor = true; break;
+            case 8: colorBuscado = "Amarillo"; buscaMayor = false; break;
         }
 
-        std::vector<int> candidatosColor;
+        int idxGanador = -1;
+        int mejorValor = buscaMayor ? -1 : 999;
 
-        // 1. Filtrar las cartas que cumplen con el color objetivo de la regla
         for (size_t i = 0; i < mesa.size(); ++i) {
             if (mesa[i].getColor() == colorBuscado) {
-                candidatosColor.push_back(i);
-            }
-        }
-
-        // CASO A: Hay cartas del color buscado en la mesa
-        if (!candidatosColor.empty()) {
-            int idxMejor = candidatosColor[0];
-
-            for (size_t i = 1; i < candidatosColor.size(); ++i) {
-                int idxActual = candidatosColor[i];
-                if (buscarMasAlto) {
-                    if (mesa[idxActual].getValor() > mesa[idxMejor].getValor()) {
-                        idxMejor = idxActual;
+                if (buscaMayor) {
+                    if (mesa[i].getValor() > mejorValor) {
+                        mejorValor = mesa[i].getValor();
+                        idxGanador = i;
                     }
-                } else { // Buscar el más bajo
-                    if (mesa[idxActual].getValor() < mesa[idxMejor].getValor()) {
-                        idxMejor = idxActual;
+                } else {
+                    if (mesa[i].getValor() < mejorValor) {
+                        mejorValor = mesa[i].getValor();
+                        idxGanador = i;
                     }
                 }
             }
-            return idxMejor;
         }
 
-        // CASO B: Nadie jugo el color objetivo. Desempate por la carta jugada primero (el jugador humano) o valor mas alto
-        int idxMejor = 0;
-        for (size_t i = 1; i < mesa.size(); ++i) {
-            if (buscarMasAlto) {
-                if (mesa[i].getValor() > mesa[idxMejor].getValor()) {
-                    idxMejor = i;
-                }
-            } else {
-                if (mesa[i].getValor() < mesa[idxMejor].getValor()) {
-                    idxMejor = i;
-                }
-            }
+        // Si nadie jugo el color indicado en la regla, gana el primero que jugo
+        if (idxGanador == -1) {
+            idxGanador = 0;
         }
 
-        return idxMejor;
+        return idxGanador;
     }
 };
 
