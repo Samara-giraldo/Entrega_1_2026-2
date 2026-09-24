@@ -25,7 +25,7 @@ private:
     int pedirReglaRonda(int numeroRonda) {
         int opcionRegla = 1;
         std::cout << "\n========================================\n";
-        std::cout << "           RONDA " << numeroRonda << "\n";
+        std::cout << "               RONDA " << numeroRonda << "\n";
         std::cout << "========================================\n";
         std::cout << "Selecciona la regla para esta ronda:\n";
         std::cout << "1. El Rojo mas alto gana\n";
@@ -66,10 +66,12 @@ public:
         guardarProgresoEnDisco("=== NUEVA PARTIDA ===");
 
         for (int ronda = 1; ronda <= 4; ++ronda) {
+            // Se pide la regla de forma interactiva en CADA ronda
             int opcionElegida = pedirReglaRonda(ronda);
             Regla reglaActual(opcionElegida);
 
-            std::cout << "\nCondicion activa: " << reglaActual.getDescripcion() << "\n";
+            std::cout << "\nCondicion activa para la Ronda " << ronda << ": " 
+                      << reglaActual.getDescripcion() << "\n";
 
             std::vector<Carta> mesa;
 
@@ -119,7 +121,7 @@ public:
         }
 
         std::cout << "\n========================================\n";
-        std::cout << "           PUNTUACION FINAL             \n";
+        std0::cout << "           PUNTUACION FINAL             \n";
         std::cout << "========================================\n";
 
         std::string ganadorFinal = _jugadores[0].getNombre();
