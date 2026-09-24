@@ -22,10 +22,12 @@ private:
         }
     }
 
-    int pedirReglaRonda() {
+    int pedirReglaRonda(int numeroRonda) {
         int opcionRegla = 1;
-        std::cout << "\n----------------------------------------\n";
-        std::cout << "SELECCIONA LA REGLA PARA ESTA RONDA:\n";
+        std::cout << "\n========================================\n";
+        std::cout << "           RONDA " << numeroRonda << "\n";
+        std::cout << "========================================\n";
+        std::cout << "Selecciona la regla para esta ronda:\n";
         std::cout << "1. El Rojo mas alto gana\n";
         std::cout << "2. El Rojo mas bajo gana\n";
         std::cout << "3. El Azul mas alto gana\n";
@@ -34,7 +36,7 @@ private:
         std::cout << "6. El Verde mas bajo gana\n";
         std::cout << "7. El Amarillo mas alto gana\n";
         std::cout << "8. El Amarillo mas bajo gana\n";
-        std::cout << "Selecciona una condicion (1-8): ";
+        std::cout << "Opcion (1-8): ";
 
         while (!(std::cin >> opcionRegla) || opcionRegla < 1 || opcionRegla > 8) {
             std::cout << "Opcion invalida. Elige un numero del 1 al 8: ";
@@ -46,17 +48,15 @@ private:
 
 public:
     Juego(std::string nombreHumano) {
-        // El usuario ingresa como el primer jugador activo
         _jugadores.push_back(Jugador(nombreHumano));
-        _jugadores.push_back(Jugador("Maria (Bot)"));
-        _jugadores.push_back(Jugador("Esteban (Bot)"));
-        _jugadores.push_back(Jugador("Felipe (Bot)"));
+        _jugadores.push_back(Jugador("Maria"));
+        _jugadores.push_back(Jugador("Esteban"));
+        _jugadores.push_back(Jugador("Felipe"));
     }
 
     void iniciarPartida() {
         _mazo.mezclar();
 
-        // Reparto inicial de 4 cartas a cada uno de los 4 jugadores
         for (int i = 0; i < 4; ++i) {
             for (auto& jug : _jugadores) {
                 jug.recibirCarta(_mazo.repartir());
@@ -66,20 +66,14 @@ public:
         guardarProgresoEnDisco("=== NUEVA PARTIDA ===");
 
         for (int ronda = 1; ronda <= 4; ++ronda) {
-            std::cout << "\n========================================\n";
-            std::cout << "               RONDA " << ronda << "\n";
-            std::cout << "========================================\n";
-
-            // El usuario escoge la regla especifica para esta ronda
-            int opcionElegida = pedirReglaRonda();
+            int opcionElegida = pedirReglaRonda(ronda);
             Regla reglaActual(opcionElegida);
 
-            std::cout << "\n>> Condicion activa para la Ronda " << ronda << ": " 
-                      << reglaActual.getDescripcion() << "\n";
+            std::cout << "\nCondicion activa: " << reglaActual.getDescripcion() << "\n";
 
             std::vector<Carta> mesa;
 
-            // --- TURNO DEL JUGADOR HUMANO ---
+            // Turno del jugador humano
             std::cout << "\nTus cartas disponibles (" << _jugadores[0].getNombre() << "):\n";
             _jugadores[0].mostrarMano();
 
@@ -99,10 +93,10 @@ public:
 
             Carta cartaHumano = _jugadores[0].jugarCartaPorIndice(seleccion - 1);
             mesa.push_back(cartaHumano);
-            std::cout << "\n" << _jugadores[0].getNombre() << " (Tu) lanzaste a la mesa: " 
+            std::cout << "\n" << _jugadores[0].getNombre() << " lanzaste a la mesa: " 
                       << cartaHumano.getColor() << " " << cartaHumano.getValor() << "\n";
 
-            // --- TURNO DE LOS OTROS 3 JUGADORES (BOTS) ---
+            // Turno de los otros jugadores
             for (size_t i = 1; i < _jugadores.size(); ++i) {
                 Carta c = _jugadores[i].jugarCartaAuto();
                 mesa.push_back(c);
@@ -110,7 +104,6 @@ public:
                           << c.getColor() << " " << c.getValor() << "\n";
             }
 
-            // Evaluar el ganador de la ronda segun la regla elegida
             int idxGanador = reglaActual.evaluarGanadorRonda(mesa);
             _jugadores[idxGanador].sumarPunto();
 
@@ -125,7 +118,6 @@ public:
             guardarProgresoEnDisco(datosRonda);
         }
 
-        // --- RESULTADOS FINALES ---
         std::cout << "\n========================================\n";
         std::cout << "           PUNTUACION FINAL             \n";
         std::cout << "========================================\n";

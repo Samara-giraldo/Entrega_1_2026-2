@@ -17,9 +17,6 @@ int main() {
     std::cout << "Ingresa tu nombre para unirte como jugador: ";
     std::cin >> nombreUsuario;
 
-    std::cout << "\nHola " << nombreUsuario << ", listo para comenzar el juego.\n";
-    std::cout << "En cada ronda podras elegir una condicion diferente.\n";
-
     Juego miJuego(nombreUsuario);
     miJuego.iniciarPartida();
 
