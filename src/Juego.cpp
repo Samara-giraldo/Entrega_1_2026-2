@@ -25,33 +25,36 @@ private:
 
 public:
     Juego(std::string nombreHumano, const Regla& regla) : _reglaActual(regla) {
+        // El usuario ingresa como el primer jugador activo
         _jugadores.push_back(Jugador(nombreHumano));
-        _jugadores.push_back(Jugador("Maria"));
-        _jugadores.push_back(Jugador("Esteban"));
-        _jugadores.push_back(Jugador("Felipe"));
+        _jugadores.push_back(Jugador("Maria (Bot)"));
+        _jugadores.push_back(Jugador("Esteban (Bot)"));
+        _jugadores.push_back(Jugador("Felipe (Bot)"));
     }
 
     void iniciarPartida() {
         _mazo.mezclar();
 
-        // Reparto inicial de 4 cartas por jugador
+        // Reparto inicial de 4 cartas a cada uno de los 4 jugadores
         for (int i = 0; i < 4; ++i) {
             for (auto& jug : _jugadores) {
                 jug.recibirCarta(_mazo.repartir());
             }
         }
 
-        guardarProgresoEnDisco("=== NUEVA PARTIDA CON REGLA SELECCIONADA ===");
+        guardarProgresoEnDisco("=== NUEVA PARTIDA ===");
+        guardarProgresoEnDisco("Regla Activa: " + _reglaActual.getDescripcion());
 
         for (int ronda = 1; ronda <= 4; ++ronda) {
             std::cout << "\n========================================\n";
             std::cout << "               RONDA " << ronda << "\n";
+            std::cout << " Condicion: " << _reglaActual.getDescripcion() << "\n";
             std::cout << "========================================\n";
 
             std::vector<Carta> mesa;
 
-            // Turno del Jugador Humano
-            std::cout << "\nTus cartas disponibles:\n";
+            // --- TURNO DEL JUGADOR HUMANO ---
+            std::cout << "\nTus cartas disponibles (" << _jugadores[0].getNombre() << "):\n";
             _jugadores[0].mostrarMano();
 
             int seleccion = 0;
@@ -70,20 +73,23 @@ public:
 
             Carta cartaHumano = _jugadores[0].jugarCartaPorIndice(seleccion - 1);
             mesa.push_back(cartaHumano);
-            std::cout << "\nLanzaste a la mesa: " << cartaHumano.getColor() << " " << cartaHumano.getValor() << "\n";
+            std::cout << "\n" << _jugadores[0].getNombre() << " (Tu) lanzaste a la mesa: " 
+                      << cartaHumano.getColor() << " " << cartaHumano.getValor() << "\n";
 
-            // Turno de los Bots
+            // --- TURNO DE LOS OTROS 3 JUGADORES (BOTS) ---
             for (size_t i = 1; i < _jugadores.size(); ++i) {
                 Carta c = _jugadores[i].jugarCartaAuto();
                 mesa.push_back(c);
-                std::cout << _jugadores[i].getNombre() << " jugo: " << c.getColor() << " " << c.getValor() << "\n";
+                std::cout << _jugadores[i].getNombre() << " jugo: " 
+                          << c.getColor() << " " << c.getValor() << "\n";
             }
 
-            // Evaluar el ganador según la Regla activa
+            // Evaluar el ganador de la ronda
             int idxGanador = _reglaActual.evaluarGanadorRonda(mesa);
             _jugadores[idxGanador].sumarPunto();
 
-            std::cout << "\n>> ¡Gana la ronda " << ronda << ": " << _jugadores[idxGanador].getNombre() << "!\n";
+            std::cout << "\n>> ¡Gana la ronda " << ronda << ": " << _jugadores[idxGanador].getNombre() 
+                      << " con la carta " << mesa[idxGanador].getColor() << " " << mesa[idxGanador].getValor() << "!\n";
 
             std::string datosRonda = "Ronda " + std::to_string(ronda) + " | Ganador: " + 
                                      _jugadores[idxGanador].getNombre() + 
@@ -92,7 +98,7 @@ public:
             guardarProgresoEnDisco(datosRonda);
         }
 
-        // Resultados Finales
+        // --- RESULTADOS FINALES ---
         std::cout << "\n========================================\n";
         std::cout << "           PUNTUACION FINAL             \n";
         std::cout << "========================================\n";
