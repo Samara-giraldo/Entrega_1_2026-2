@@ -12,7 +12,6 @@ class Juego {
 private:
     Mazo _mazo;
     std::vector<Jugador> _jugadores;
-    Regla _reglaActual;
 
     void guardarProgresoEnDisco(const std::string& texto) {
         std::ofstream archivo("partida_guardada.txt", std::ios::app);
@@ -23,8 +22,30 @@ private:
         }
     }
 
+    int pedirReglaRonda() {
+        int opcionRegla = 1;
+        std::cout << "\n----------------------------------------\n";
+        std::cout << "SELECCIONA LA REGLA PARA ESTA RONDA:\n";
+        std::cout << "1. El Rojo mas alto gana\n";
+        std::cout << "2. El Rojo mas bajo gana\n";
+        std::cout << "3. El Azul mas alto gana\n";
+        std::cout << "4. El Azul mas bajo gana\n";
+        std::cout << "5. El Verde mas alto gana\n";
+        std::cout << "6. El Verde mas bajo gana\n";
+        std::cout << "7. El Amarillo mas alto gana\n";
+        std::cout << "8. El Amarillo mas bajo gana\n";
+        std::cout << "Selecciona una condicion (1-8): ";
+
+        while (!(std::cin >> opcionRegla) || opcionRegla < 1 || opcionRegla > 8) {
+            std::cout << "Opcion invalida. Elige un numero del 1 al 8: ";
+            std::cin.clear();
+            std::cin.ignore(10000, '\n');
+        }
+        return opcionRegla;
+    }
+
 public:
-    Juego(std::string nombreHumano, const Regla& regla) : _reglaActual(regla) {
+    Juego(std::string nombreHumano) {
         // El usuario ingresa como el primer jugador activo
         _jugadores.push_back(Jugador(nombreHumano));
         _jugadores.push_back(Jugador("Maria (Bot)"));
@@ -43,13 +64,18 @@ public:
         }
 
         guardarProgresoEnDisco("=== NUEVA PARTIDA ===");
-        guardarProgresoEnDisco("Regla Activa: " + _reglaActual.getDescripcion());
 
         for (int ronda = 1; ronda <= 4; ++ronda) {
             std::cout << "\n========================================\n";
             std::cout << "               RONDA " << ronda << "\n";
-            std::cout << " Condicion: " << _reglaActual.getDescripcion() << "\n";
             std::cout << "========================================\n";
+
+            // El usuario escoge la regla especifica para esta ronda
+            int opcionElegida = pedirReglaRonda();
+            Regla reglaActual(opcionElegida);
+
+            std::cout << "\n>> Condicion activa para la Ronda " << ronda << ": " 
+                      << reglaActual.getDescripcion() << "\n";
 
             std::vector<Carta> mesa;
 
@@ -84,15 +110,16 @@ public:
                           << c.getColor() << " " << c.getValor() << "\n";
             }
 
-            // Evaluar el ganador de la ronda
-            int idxGanador = _reglaActual.evaluarGanadorRonda(mesa);
+            // Evaluar el ganador de la ronda segun la regla elegida
+            int idxGanador = reglaActual.evaluarGanadorRonda(mesa);
             _jugadores[idxGanador].sumarPunto();
 
             std::cout << "\n>> ¡Gana la ronda " << ronda << ": " << _jugadores[idxGanador].getNombre() 
                       << " con la carta " << mesa[idxGanador].getColor() << " " << mesa[idxGanador].getValor() << "!\n";
 
-            std::string datosRonda = "Ronda " + std::to_string(ronda) + " | Ganador: " + 
-                                     _jugadores[idxGanador].getNombre() + 
+            std::string datosRonda = "Ronda " + std::to_string(ronda) + 
+                                     " | Condicion: " + reglaActual.getDescripcion() +
+                                     " | Ganador: " + _jugadores[idxGanador].getNombre() + 
                                      " | Carta: " + mesa[idxGanador].getColor() + " " + std::to_string(mesa[idxGanador].getValor());
             
             guardarProgresoEnDisco(datosRonda);
