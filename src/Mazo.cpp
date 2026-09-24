@@ -5,6 +5,8 @@
 #include <string>
 #include <algorithm>
 #include <random>
+#include <chrono>
+#include "Carta.cpp"
 
 class Mazo {
 private:
@@ -14,25 +16,21 @@ public:
     Mazo() {
         std::vector<std::string> colores = {"Rojo", "Azul", "Verde", "Amarillo"};
         for (const auto& color : colores) {
-            for (int val = 1; val <= 8; ++val) {
-                _cartas.push_back(Carta(color, val));
+            for (int i = 1; i <= 8; ++i) { // Cartas del 1 al 8
+                _cartas.push_back(Carta(color, i));
             }
         }
     }
 
     void mezclar() {
-        std::random_device rd;
-        std::mt19937 g(rd());
-        std::shuffle(_cartas.begin(), _cartas.end(), g);
+        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+        std::shuffle(_cartas.begin(), _cartas.end(), std::default_random_engine(seed));
     }
 
     Carta repartir() {
-        if (!_cartas.empty()) {
-            Carta c = _cartas.back();
-            _cartas.pop_back();
-            return c;
-        }
-        return Carta("Vacia", 0);
+        Carta c = _cartas.back();
+        _cartas.pop_back();
+        return c;
     }
 };
 
