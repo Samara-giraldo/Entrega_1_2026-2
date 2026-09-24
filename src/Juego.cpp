@@ -6,6 +6,9 @@
 #include <string>
 #include <fstream>
 #include <limits>
+#include "Carta.cpp"
+#include "Mazo.cpp"
+#include "Jugador.cpp"
 #include "Regla.cpp"
 
 class Juego {
@@ -66,7 +69,6 @@ public:
         guardarProgresoEnDisco("=== NUEVA PARTIDA ===");
 
         for (int ronda = 1; ronda <= 4; ++ronda) {
-            // Se pide la regla de forma interactiva en CADA ronda
             int opcionElegida = pedirReglaRonda(ronda);
             Regla reglaActual(opcionElegida);
 
@@ -121,7 +123,7 @@ public:
         }
 
         std::cout << "\n========================================\n";
-        std0::cout << "           PUNTUACION FINAL             \n";
+        std::cout << "           PUNTUACION FINAL             \n";
         std::cout << "========================================\n";
 
         std::string ganadorFinal = _jugadores[0].getNombre();
