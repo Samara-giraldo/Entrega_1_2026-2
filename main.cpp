@@ -15,37 +15,30 @@ int main() {
     std::cout << "   JUEGO DE CARTAS INTERACTIVO      \n";
     std::cout << "====================================\n\n";
 
-    std::cout << "Ingresa tu nombre para iniciar: ";
+    std::cout << "Ingresa tu nombre para unirte como jugador: ";
     std::cin >> nombreUsuario;
 
-    std::cout << "\nHola " << nombreUsuario << ", elige la regla para la partida:\n";
-    std::cout << "1. Valor mas alto gana (Desempate por Color: Rojo > Azul > Verde > Amarillo)\n";
-    std::cout << "2. Regla Personalizada (Elegir Color de Triunfo Dominante)\n";
-    std::cout << "Selecciona una opcion (1 o 2): ";
-    std::cin >> opcionRegla;
+    std::cout << "\nHola " << nombreUsuario << ", elige la regla o condicion para la partida:\n";
+    std::cout << "1. El Rojo mas alto gana\n";
+    std::cout << "2. El Rojo mas bajo gana\n";
+    std::cout << "3. El Azul mas alto gana\n";
+    std::cout << "4. El Azul mas bajo gana\n";
+    std::cout << "5. El Verde mas alto gana\n";
+    std::cout << "6. El Verde mas bajo gana\n";
+    std::cout << "7. El Amarillo mas alto gana\n";
+    std::cout << "8. El Amarillo mas bajo gana\n";
+    std::cout << "Selecciona una opcion (1-8): ";
+    
+    while (!(std::cin >> opcionRegla) || opcionRegla < 1 || opcionRegla > 8) {
+        std::cout << "Opcion invalida. Elige un numero del 1 al 8: ";
+        std::cin.clear();
+        std::cin.ignore(10000, '\n');
+    }
 
     Regla reglaJuego(opcionRegla);
 
-    if (opcionRegla == 2) {
-        std::string colorTriunfo;
-        std::string desc;
-
-        std::cout << "\n--- CONFIGURACION DE REGLA PERSONALIZADA ---\n";
-        std::cout << "Escribe una breve descripcion para tu regla: ";
-        std::cin.ignore(10000, '\n');
-        std::getline(std::cin, desc);
-        reglaJuego.setDescripcionPersonalizada(desc);
-
-        std::cout << "Elige el Color de Triunfo que le gana a los demas (Rojo, Azul, Verde, Amarillo): ";
-        std::cin >> colorTriunfo;
-        reglaJuego.setColorTriunfo(colorTriunfo);
-
-        std::cout << "\n>> Regla activada: Cartas de color " << colorTriunfo << " dominan la mesa.\n";
-    } else {
-        std::cout << "\n>> Regla activada: Valor mas alto gana (Jerarquia de colores para desempate activa).\n";
-    }
-
-    std::cout << "\n¡Perfecto! Repartiendo 4 cartas a cada jugador e iniciando la partida...\n";
+    std::cout << "\n>> Regla seleccionada: " << reglaJuego.getDescripcion() << "\n";
+    std::cout << "Repartiendo 4 cartas a cada uno de los 4 jugadores e iniciando...\n";
 
     Juego miJuego(nombreUsuario, reglaJuego);
     miJuego.iniciarPartida();
