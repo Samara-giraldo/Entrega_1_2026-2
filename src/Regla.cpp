@@ -8,69 +8,92 @@
 
 class Regla {
 private:
-    int _tipoRegla; // 1: Mayor Valor con Jerarquía de Color | 2: Regla Personalizada
-    std::string _descripcionPersonalizada;
-    std::string _colorTriunfo; // Color dominante en caso de regla personalizada
+    int _opcionSeleccionada;
+    std::string _descripcion;
 
 public:
-    Regla(int tipo = 1) : _tipoRegla(tipo), _colorTriunfo("Rojo") {}
-
-    void setTipoRegla(int tipo) { _tipoRegla = tipo; }
-    void setDescripcionPersonalizada(const std::string& desc) { _descripcionPersonalizada = desc; }
-    void setColorTriunfo(const std::string& color) { _colorTriunfo = color; }
-
-    int getTipoRegla() const { return _tipoRegla; }
-    std::string getDescripcion() const { return _descripcionPersonalizada; }
-
-    // Convierte el color a una jerarquía numérica para desemparar o evaluar prioridad
-    static int obtenerPesoColor(const std::string& color) {
-        if (color == "Rojo" || color == "rojo") return 4;
-        if (color == "Azul" || color == "azul") return 3;
-        if (color == "Verde" || color == "verde") return 2;
-        if (color == "Amarillo" || color == "amarillo") return 1;
-        return 0;
+    Regla(int opcion = 1) : _opcionSeleccionada(opcion) {
+        setOpcion(opcion);
     }
 
-    // Evalúa quién gana la ronda considerando el Valor Y el Color
+    void setOpcion(int opcion) {
+        _opcionSeleccionada = opcion;
+        switch (_opcionSeleccionada) {
+            case 1: _descripcion = "El Rojo mas alto gana"; break;
+            case 2: _descripcion = "El Rojo mas bajo gana"; break;
+            case 3: _descripcion = "El Azul mas alto gana"; break;
+            case 4: _descripcion = "El Azul mas bajo gana"; break;
+            case 5: _descripcion = "El Verde mas alto gana"; break;
+            case 6: _descripcion = "El Verde mas bajo gana"; break;
+            case 7: _descripcion = "El Amarillo mas alto gana"; break;
+            case 8: _descripcion = "El Amarillo mas bajo gana"; break;
+            default: _descripcion = "El Rojo mas alto gana"; break;
+        }
+    }
+
+    std::string getDescripcion() const { return _descripcion; }
+
     int evaluarGanadorRonda(const std::vector<Carta>& mesa) const {
         if (mesa.empty()) return 0;
 
-        int indiceGanador = 0;
+        std::string colorBuscado = "";
+        bool buscarMasAlto = true;
 
-        if (_tipoRegla == 1) {
-            // REGLA 1: Gana el valor más alto. Si hay empate en valor, desempata la jerarquía de color (Rojo > Azul > Verde > Amarillo)
-            for (size_t i = 1; i < mesa.size(); ++i) {
-                if (mesa[i].getValor() > mesa[indiceGanador].getValor()) {
-                    indiceGanador = i;
-                } else if (mesa[i].getValor() == mesa[indiceGanador].getValor()) {
-                    // Desempate por color
-                    if (obtenerPesoColor(mesa[i].getColor()) > obtenerPesoColor(mesa[indiceGanador].getColor())) {
-                        indiceGanador = i;
+        switch (_opcionSeleccionada) {
+            case 1: colorBuscado = "Rojo"; buscarMasAlto = true; break;
+            case 2: colorBuscado = "Rojo"; buscarMasAlto = false; break;
+            case 3: colorBuscado = "Azul"; buscarMasAlto = true; break;
+            case 4: colorBuscado = "Azul"; buscarMasAlto = false; break;
+            case 5: colorBuscado = "Verde"; buscarMasAlto = true; break;
+            case 6: colorBuscado = "Verde"; buscarMasAlto = false; break;
+            case 7: colorBuscado = "Amarillo"; buscarMasAlto = true; break;
+            case 8: colorBuscado = "Amarillo"; buscarMasAlto = false; break;
+            default: colorBuscado = "Rojo"; buscarMasAlto = true; break;
+        }
+
+        std::vector<int> candidatosColor;
+
+        // 1. Filtrar las cartas que cumplen con el color objetivo de la regla
+        for (size_t i = 0; i < mesa.size(); ++i) {
+            if (mesa[i].getColor() == colorBuscado) {
+                candidatosColor.push_back(i);
+            }
+        }
+
+        // CASO A: Hay cartas del color buscado en la mesa
+        if (!candidatosColor.empty()) {
+            int idxMejor = candidatosColor[0];
+
+            for (size_t i = 1; i < candidatosColor.size(); ++i) {
+                int idxActual = candidatosColor[i];
+                if (buscarMasAlto) {
+                    if (mesa[idxActual].getValor() > mesa[idxMejor].getValor()) {
+                        idxMejor = idxActual;
+                    }
+                } else { // Buscar el más bajo
+                    if (mesa[idxActual].getValor() < mesa[idxMejor].getValor()) {
+                        idxMejor = idxActual;
                     }
                 }
             }
-        } else if (_tipoRegla == 2) {
-            // REGLA 2 (Personalizada): Las cartas del Color de Triunfo/Predilecto ganan automáticamente sobre otros colores.
-            // Si hay varias del color triunfo, gana la de mayor valor.
-            for (size_t i = 1; i < mesa.size(); ++i) {
-                bool cartaActualEsTriunfo = (mesa[i].getColor() == _colorTriunfo);
-                bool cartaGanadoraEsTriunfo = (mesa[indiceGanador].getColor() == _colorTriunfo);
+            return idxMejor;
+        }
 
-                if (cartaActualEsTriunfo && !cartaGanadoraEsTriunfo) {
-                    indiceGanador = i;
-                } else if (cartaActualEsTriunfo && cartaGanadoraEsTriunfo) {
-                    if (mesa[i].getValor() > mesa[indiceGanador].getValor()) {
-                        indiceGanador = i;
-                    }
-                } else if (!cartaActualEsTriunfo && !cartaGanadoraEsTriunfo) {
-                    if (mesa[i].getValor() > mesa[indiceGanador].getValor()) {
-                        indiceGanador = i;
-                    }
+        // CASO B: Nadie jugo el color objetivo. Desempate por la carta jugada primero (el jugador humano) o valor mas alto
+        int idxMejor = 0;
+        for (size_t i = 1; i < mesa.size(); ++i) {
+            if (buscarMasAlto) {
+                if (mesa[i].getValor() > mesa[idxMejor].getValor()) {
+                    idxMejor = i;
+                }
+            } else {
+                if (mesa[i].getValor() < mesa[idxMejor].getValor()) {
+                    idxMejor = i;
                 }
             }
         }
 
-        return indiceGanador;
+        return idxMejor;
     }
 };
 
