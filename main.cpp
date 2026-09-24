@@ -1,10 +1,5 @@
 #include <iostream>
 #include <string>
-
-#include "src/Carta.cpp"
-#include "src/Jugador.cpp"
-#include "src/Mazo.cpp"
-#include "src/Regla.cpp"
 #include "src/Juego.cpp"
 
 int main() {
