@@ -21,7 +21,6 @@ private:
         if (archivo.is_open()) {
             archivo << texto << "\n";
             archivo.close();
-            std::cout << ">> [DISCO OK] Registro guardado en 'partida_guardada.txt'\n";
         }
     }
 
@@ -66,7 +65,8 @@ public:
             }
         }
 
-        guardarProgresoEnDisco("=== NUEVA PARTIDA ===");
+        std::vector<std::string> historialPartida;
+        historialPartida.push_back("=== NUEVA PARTIDA ===");
 
         for (int ronda = 1; ronda <= 4; ++ronda) {
             int opcionElegida = pedirReglaRonda(ronda);
@@ -119,14 +119,13 @@ public:
                                      " | Ganador: " + _jugadores[idxGanador].getNombre() + 
                                      " | Carta: " + mesa[idxGanador].getColor() + " " + std::to_string(mesa[idxGanador].getValor());
             
-            guardarProgresoEnDisco(datosRonda);
+            historialPartida.push_back(datosRonda);
         }
 
         std::cout << "\n========================================\n";
         std::cout << "           PUNTUACION FINAL             \n";
         std::cout << "========================================\n";
 
-        // 1. Obtener el puntaje maximo alcanzado
         int maxPuntos = -1;
         for (const auto& jug : _jugadores) {
             std::cout << jug.getNombre() << ": " << jug.getPuntos() << " puntos\n";
@@ -135,7 +134,6 @@ public:
             }
         }
 
-        // 2. Buscar todos los jugadores con ese puntaje maximo
         std::vector<std::string> ganadores;
         for (const auto& jug : _jugadores) {
             if (jug.getPuntos() == maxPuntos) {
@@ -143,7 +141,6 @@ public:
             }
         }
 
-        // 3. Generar mensaje de ganador unico o empate
         std::string mensajeGanador = "";
         if (ganadores.size() > 1) {
             mensajeGanador = "EMPATE ENTRE: ";
@@ -156,7 +153,21 @@ public:
         }
 
         std::cout << "\n¡" << mensajeGanador << "!\n";
-        guardarProgresoEnDisco(mensajeGanador + " con " + std::to_string(maxPuntos) + " puntos\n---");
+        historialPartida.push_back(mensajeGanador + " con " + std::to_string(maxPuntos) + " puntos\n---");
+
+        // Preguntar al usuario si desea guardar la partida
+        char opcionGuardar;
+        std::cout << "\n¿Deseas guardar el registro de esta partida en disco? (s/n): ";
+        std::cin >> opcionGuardar;
+
+        if (opcionGuardar == 's' || opcionGuardar == 'S') {
+            for (const auto& linea : historialPartida) {
+                guardarProgresoEnDisco(linea);
+            }
+            std::cout << ">> [DISCO OK] La partida ha sido guardada en 'partida_guardada.txt'\n";
+        } else {
+            std::cout << ">> La partida no fue guardada.\n";
+        }
     }
 };
 

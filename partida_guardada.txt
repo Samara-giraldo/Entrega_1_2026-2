@@ -1,0 +1,7 @@
+=== NUEVA PARTIDA ===
+Ronda 1 | Condicion: El Rojo mas bajo gana | Ganador: sam | Carta: Verde 3
+Ronda 2 | Condicion: El Rojo mas alto gana | Ganador: Maria | Carta: Rojo 8
+Ronda 3 | Condicion: El Rojo mas alto gana | Ganador: Maria | Carta: Rojo 3
+Ronda 4 | Condicion: El Rojo mas bajo gana | Ganador: Esteban | Carta: Rojo 2
+GANADOR DE LA PARTIDA: Maria con 2 puntos
+---
